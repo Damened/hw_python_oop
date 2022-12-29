@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Type
+from typing import Dict, List, Type, Union
 
 
 @dataclass
@@ -19,7 +19,6 @@ class InfoMessage:
                 f'Потрачено ккал: {self.calories:.3f}.')
 
 
-@dataclass
 class Training:
     """Базовый класс тренировки."""
     LEN_STEP: float = 0.65
@@ -56,7 +55,6 @@ class Training:
                            self.get_spent_calories())
 
 
-@dataclass
 class Running(Training):
     """Тренировка: бег."""
     CALORIES_MEAN_SPEED_MULTIPLIER: int = 18
@@ -75,14 +73,12 @@ class Running(Training):
                 * self.weight / self.M_IN_KM * self.duration * self.MIN_IN_H)
 
 
-@dataclass
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
     CALORIES_WEIGHT_MULTIPLIER: float = 0.035
     CALORIES_SPEED_HEIGHT_MULTIPLIER: float = 0.029
     KMH_IN_MSEC: float = 0.278
     CM_IN_M: int = 100
-    MIN_IN_H = 60
 
     def __init__(self,
                  action: int,
@@ -100,7 +96,6 @@ class SportsWalking(Training):
                 * self.weight) * self.duration * self.MIN_IN_H)
 
 
-@dataclass
 class Swimming(Training):
     """Тренировка: плавание."""
     CALORIES_WEIGHT_MULTIPLIER: float = 2
@@ -131,9 +126,9 @@ class Swimming(Training):
         return self.action * self.LEN_STEP / self.M_IN_KM
 
 
-def read_package(workout_type: str, data: list) -> Training:
+def read_package(workout_type: str, data: List[Union[int, float]]) -> Training:
     """Прочитать данные полученные от датчиков."""
-    train: dict[str, Type[Training]] = {'SWM': Swimming,
+    train: Dict[str, Type[Training]] = {'SWM': Swimming,
                                         'RUN': Running,
                                         'WLK': SportsWalking}
     if workout_type not in train:
